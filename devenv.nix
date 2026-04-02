@@ -8,6 +8,9 @@
   packages = [
     pkgs.git
     pkgs.cmake
+    pkgs.vulkan-loader
+    pkgs.vulkan-headers
+    pkgs.shaderc
   ];
 
   # https://devenv.sh/languages/
