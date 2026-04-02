@@ -11,6 +11,7 @@
     pkgs.vulkan-loader
     pkgs.vulkan-headers
     pkgs.shaderc
+    pkgs.pnpm
   ];
 
   # https://devenv.sh/languages/
