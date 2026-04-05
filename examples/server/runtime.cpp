@@ -332,3 +332,33 @@ int64_t unix_timestamp_now() {
                std::chrono::system_clock::now().time_since_epoch())
         .count();
 }
+
+void upscale_results(ServerRuntime& rt, sd_image_t* results, int num_results) {
+    if (rt.upscaler_ctx == nullptr || results == nullptr) {
+        return;
+    }
+    int upscale_factor  = get_upscale_factor(rt.upscaler_ctx);
+    int upscale_repeats = rt.default_gen_params->upscale_repeats;
+    for (int i = 0; i < num_results; i++) {
+        if (results[i].data == nullptr) {
+            continue;
+        }
+        sd_image_t current_image = results[i];
+        for (int u = 0; u < upscale_repeats; ++u) {
+            sd_image_t* upscaled_images = nullptr;
+            int upscaled_count          = 0;
+            bool upscale_ok             = upscale(rt.upscaler_ctx, current_image, upscale_factor, &upscaled_images, &upscaled_count);
+            if (!upscale_ok || upscaled_count <= 0 || upscaled_images[0].data == nullptr) {
+                free_sd_images(upscaled_images, upscaled_count);
+                LOG_ERROR("upscale failed");
+                break;
+            }
+            sd_image_t upscaled_image = upscaled_images[0];
+            upscaled_images[0]        = {0, 0, 0, nullptr};
+            free_sd_images(upscaled_images, upscaled_count);
+            free(current_image.data);
+            current_image = upscaled_image;
+        }
+        results[i] = current_image;
+    }
+}

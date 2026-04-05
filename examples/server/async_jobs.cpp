@@ -189,6 +189,8 @@ bool execute_img_gen_job(ServerRuntime& runtime,
         return false;
     }
 
+    upscale_results(runtime, results.data(), num_results);
+
     EncodedImageFormat encoded_format = EncodedImageFormat::PNG;
     if (job.img_gen.output_format == "jpeg") {
         encoded_format = EncodedImageFormat::JPEG;

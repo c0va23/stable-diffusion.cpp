@@ -94,6 +94,20 @@ int main(int argc, const char** argv) {
         return 1;
     }
 
+    upscaler_ctx_t* upscaler_ctx = nullptr;
+    if (!ctx_params.esrgan_path.empty()) {
+        upscaler_ctx = new_upscaler_ctx(ctx_params.esrgan_path.c_str(),
+                                        ctx_params.diffusion_conv_direct,
+                                        ctx_params.n_threads,
+                                        default_gen_params.upscale_tile_size,
+                                        ctx_params.backend.c_str(),
+                                        ctx_params.params_backend.c_str());
+        if (upscaler_ctx == nullptr) {
+            LOG_ERROR("new_upscaler_ctx failed");
+            return 1;
+        }
+    }
+
     std::mutex sd_ctx_mutex;
 
     std::vector<LoraEntry> lora_cache;
@@ -104,6 +118,7 @@ int main(int argc, const char** argv) {
     ServerRuntime runtime = {
         sd_ctx.get(),
         &sd_ctx_mutex,
+        upscaler_ctx,
         &svr_params,
         &ctx_params,
         &default_gen_params,
@@ -155,5 +170,8 @@ int main(int argc, const char** argv) {
     }
     async_job_manager.cv.notify_all();
     async_worker.join();
+    if (upscaler_ctx) {
+        free_upscaler_ctx(upscaler_ctx);
+    }
     return 0;
 }

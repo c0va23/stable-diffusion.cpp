@@ -241,6 +241,7 @@ static bool execute_sync_img_gen_request(ServerRuntime& runtime,
         error_message = "generate_image returned no results";
         return false;
     }
+    upscale_results(runtime, results.data(), num_results);
     return true;
 }
 

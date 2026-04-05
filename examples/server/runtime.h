@@ -48,6 +48,7 @@ struct UpscalerEntry {
 struct ServerRuntime {
     sd_ctx_t* sd_ctx;
     std::mutex* sd_ctx_mutex;
+    upscaler_ctx_t* upscaler_ctx;
     const SDSvrParams* svr_params;
     const SDContextParams* ctx_params;
     const SDGenerationParams* default_gen_params;
@@ -98,3 +99,4 @@ void refresh_lora_cache(ServerRuntime& rt);
 std::string get_lora_full_path(ServerRuntime& rt, const std::string& path);
 void refresh_upscaler_cache(ServerRuntime& rt);
 int64_t unix_timestamp_now();
+void upscale_results(ServerRuntime& rt, sd_image_t* results, int num_results);

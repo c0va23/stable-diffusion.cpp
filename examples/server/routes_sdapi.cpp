@@ -352,6 +352,8 @@ void register_sdapi_endpoints(httplib::Server& svr, ServerRuntime& rt) {
                 return;
             }
 
+            upscale_results(*runtime, results.data(), num_results);
+
             json out;
             out["images"]     = json::array();
             out["parameters"] = j;
