@@ -107,6 +107,7 @@ static bool build_sdapi_img_gen_request(const json& j,
     int clip_skip               = j.value("clip_skip", -1);
     std::string sampler_name    = j.value("sampler_name", "");
     std::string scheduler_name  = j.value("scheduler", "");
+    float flow_shift            = j.value("flow_shift", runtime.default_gen_params->sample_params.flow_shift);
 
     if (width <= 0 || height <= 0) {
         error_message = "width and height must be positive";
@@ -160,6 +161,8 @@ static bool build_sdapi_img_gen_request(const json& j,
     if (scheduler != SCHEDULER_COUNT) {
         request.gen_params.sample_params.scheduler = scheduler;
     }
+
+    request.gen_params.sample_params.flow_shift = flow_shift;
 
     if (j.contains("lora") && j["lora"].is_array()) {
         request.gen_params.lora_map.clear();
