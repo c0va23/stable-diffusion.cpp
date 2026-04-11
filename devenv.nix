@@ -20,6 +20,7 @@ in
 {
   # https://devenv.sh/basics/
   env = {
+    HSA_OVERRIDE_GFX_VERSION = "11.5.0";
     ROCM_PATH   = "/opt/rocm";          # compiler toolchain expects this
     HIP_PATH    = "/opt/rocm";
     HIP_DEVICE_LIB_PATH = "${rocmPkgs.rocm-device-libs}/amdgcn/bitcode";
