@@ -162,7 +162,11 @@ int main(int argc, const char** argv) {
     register_sdcpp_api_endpoints(svr, runtime);
 
     LOG_INFO("listening on: http://%s:%d\n", svr_params.listen_ip.c_str(), svr_params.listen_port);
-    svr.listen(svr_params.listen_ip, svr_params.listen_port);
+    bool listen_ok = svr.listen(svr_params.listen_ip, svr_params.listen_port);
+    if (!listen_ok) {
+        LOG_ERROR("failed to bind %s:%d (is the port already in use?)",
+                  svr_params.listen_ip.c_str(), svr_params.listen_port);
+    }
 
     {
         std::lock_guard<std::mutex> lock(async_job_manager.mutex);
@@ -173,5 +177,5 @@ int main(int argc, const char** argv) {
     if (upscaler_ctx) {
         free_upscaler_ctx(upscaler_ctx);
     }
-    return 0;
+    return listen_ok ? 0 : 1;
 }
